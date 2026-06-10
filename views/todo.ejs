@@ -1,111 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Todo List APP test</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                color: #333;
-                margin: 0;
-                padding: 0;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js Todo App - CI/CD Pipeline Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Todo App Section */
+        .todo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+        
+        /* Input Section */
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        #todo-input {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        #todo-input:focus {
+            border-color: #667eea;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        /* Todo List */
+        .todo-list {
+            list-style: none;
+        }
+        
+        .todo-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        
+        .todo-item:hover {
+            transform: translateX(5px);
+            background: #e9ecef;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        /* Workflow Section */
+        .workflow-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .workflow-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .workflow-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .workflow-step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .workflow-step .arrow {
+            font-size: 24px;
+            margin: 0 10px;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .tech-badge {
+            background: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: white;
+        }
+        
+        .developer {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        
+        .developer a {
+            color: white;
+            text-decoration: none;
+            border-bottom: 2px solid white;
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-diagram {
+                flex-direction: column;
             }
-
-            h1 {
-                background-color: #4CAF50;
-                color: white;
-                margin: 0;
-                padding: 20px;
-                text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Todo App Section -->
+        <div class="todo-section">
+            <h1>📝 Todo List Application</h1>
+            <div class="subtitle">Manage your tasks efficiently</div>
+            
+            <div class="input-section">
+                <input type="text" id="todo-input" placeholder="Enter a new task...">
+                <button onclick="addTodo()">Add Task</button>
+            </div>
+            
+            <ul class="todo-list" id="todo-list">
+                <!-- Todo items will appear here -->
+            </ul>
+        </div>
+        
+        <!-- Workflow Section -->
+        <div class="workflow-section">
+            <h2>🔄 CI/CD Pipeline Workflow</h2>
+            <div class="workflow-diagram">
+                <div class="workflow-step">📝 Code Push<br><small>(GitHub)</small></div>
+                <div class="workflow-step">🔨 Docker Build<br><small>(Local/CI)</small></div>
+                <div class="workflow-step">📦 Push to Registry<br><small>(Docker Hub)</small></div>
+                <div class="workflow-step">🚀 Auto Deploy<br><small>(Render)</small></div>
+                <div class="workflow-step">🌐 Live App<br><small>(Public URL)</small></div>
+            </div>
+            
+            <h3>🛠️ Technologies Used</h3>
+            <div class="tech-stack">
+                <span class="tech-badge">Node.js</span>
+                <span class="tech-badge">Express.js</span>
+                <span class="tech-badge">Docker</span>
+                <span class="tech-badge">Docker Hub</span>
+                <span class="tech-badge">Git & GitHub</span>
+                <span class="tech-badge">Render (PaaS)</span>
+                <span class="tech-badge">EJS Templates</span>
+                <span class="tech-badge">JavaScript</span>
+            </div>
+            
+            <h3>📋 How It Works</h3>
+            <ol style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>Developer</strong> pushes code to GitHub (local-dev branch)</li>
+                <li><strong>Render</strong> automatically detects the change via webhook</li>
+                <li><strong>Docker image</strong> is built from the Dockerfile</li>
+                <li><strong>Container</strong> is deployed on Render's infrastructure</li>
+                <li><strong>App</strong> becomes live at the public URL</li>
+                <li><strong>Every git push</strong> triggers auto-deployment (CI/CD)</li>
+            </ol>
+            
+            <h3>🏗️ AWS Alternative Mapping</h3>
+            <div class="tech-stack">
+                <span class="tech-badge">ECR → Docker Hub</span>
+                <span class="tech-badge">ECS → Render</span>
+                <span class="tech-badge">EC2 → Managed by Render</span>
+                <span class="tech-badge">CloudWatch → Render Logs</span>
+                <span class="tech-badge">IAM → GitHub OAuth</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="developer">
+                Developed by: <strong>Umair Khan</strong> 🚀
+            </div>
+            <div style="margin-top: 10px; font-size: 14px;">
+                🔄 Auto-deploys on every git push | 🐳 Docker Containerized | ☁️ Deployed on Render
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Todo App Functionality
+        async function loadTodos() {
+            const response = await fetch('/todos');
+            const todos = await response.json();
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+            
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                li.innerHTML = `
+                    <span>${todo.title}</span>
+                    <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
+                `;
+                todoList.appendChild(li);
+            });
+        }
+        
+        async function addTodo() {
+            const input = document.getElementById('todo-input');
+            const title = input.value.trim();
+            
+            if (title) {
+                await fetch('/todos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title })
+                });
+                input.value = '';
+                loadTodos();
             }
-
-            ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            ul li {
-                background: #fff;
-                border: 1px solid #ddd;
-                margin-bottom: 10px;
-                padding: 10px;
-                position: relative;
-            }
-
-            ul li a {
-                color: #333;
-                text-decoration: none;
-                font-weight: bold;
-            }
-
-            ul li a:hover {
-                color: #4CAF50;
-            }
-
-            .delete-btn {
-                color: red;
-                position: absolute;
-                right: 10px;
-                top: 10px;
-            }
-
-            .edit-btn {
-                color: #FFC107;
-                position: absolute;
-                right: 40px;
-                top: 10px;
-            }
-
-            form {
-                background: #fff;
-                padding: 20px;
-                margin-top: 20px;
-            }
-
-            label {
-                display: block;
-                margin-bottom: 10px;
-            }
-
-            input[type="text"] {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-            }
-
-            input[type="submit"] {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                cursor: pointer;
-            }
-
-            input[type="submit"]:hover {
-                background-color: #45a049;
-            }
-        </style>
-    </head>
-
-    <body>
-        <h1>Hello Junoon Batch 8 (Jenkins), Write your plan on Learning Jenkins</h1>
-        <ul>
-            <% todolist.forEach(function(todo, index) { %>
-            <li>
-                <a href="/todo/delete/<%= index %>" class="delete-btn">✘</a>
-                <a href="/todo/<%= index %>" class="edit-btn">✎</a>
-                <%- todo %>
-            </li>
-            <% }); %>
-        </ul>
-
-        <form action="/todo/add/" method="post">
-            <p>
-                <label for="newtodo">What should I do?</label>
-                <input type="text" name="newtodo" id="newtodo" autofocus />
-                <input type="submit" value="Add" />
-            </p>
-        </form>
-    </body>
+        }
+        
+        async function deleteTodo(id) {
+            await fetch(`/todos/${id}`, { method: 'DELETE' });
+            loadTodos();
+        }
+        
+        // Load todos on page load
+        loadTodos();
+    </script>
+</body>
 </html>
