@@ -106,6 +106,8 @@
             background: #dc3545;
             padding: 8px 15px;
             border-radius: 5px;
+            text-decoration: none;
+            color: white;
         }
         
         .delete-btn:hover {
@@ -143,11 +145,6 @@
             min-width: 120px;
         }
         
-        .workflow-step .arrow {
-            font-size: 24px;
-            margin: 0 10px;
-        }
-        
         .tech-stack {
             display: flex;
             flex-wrap: wrap;
@@ -176,12 +173,6 @@
             margin-top: 10px;
         }
         
-        .developer a {
-            color: white;
-            text-decoration: none;
-            border-bottom: 2px solid white;
-        }
-        
         @media (max-width: 768px) {
             .workflow-diagram {
                 flex-direction: column;
@@ -196,13 +187,22 @@
             <h1>📝 Todo List Application</h1>
             <div class="subtitle">Manage your tasks efficiently</div>
             
-            <div class="input-section">
-                <input type="text" id="todo-input" placeholder="Enter a new task...">
-                <button onclick="addTodo()">Add Task</button>
-            </div>
+            <form action="/add" method="POST" class="input-section">
+                <input type="text" id="todo-input" name="newtask" placeholder="Enter a new task..." required>
+                <button type="submit">Add Task</button>
+            </form>
             
-            <ul class="todo-list" id="todo-list">
-                <!-- Todo items will appear here -->
+            <ul class="todo-list">
+                <% if (todolist && todolist.length > 0) { %>
+                    <% for (let i = 0; i < todolist.length; i++) { %>
+                        <li class="todo-item">
+                            <span><%= todolist[i] %></span>
+                            <a href="/delete/<%= i %>" class="delete-btn" onclick="return confirm('Delete this task?')">Delete</a>
+                        </li>
+                    <% } %>
+                <% } else { %>
+                    <li style="text-align: center; color: #999;">No tasks yet. Add one above!</li>
+                <% } %>
             </ul>
         </div>
         
@@ -258,48 +258,5 @@
             </div>
         </div>
     </div>
-    
-    <script>
-        // Todo App Functionality
-        async function loadTodos() {
-            const response = await fetch('/todos');
-            const todos = await response.json();
-            const todoList = document.getElementById('todo-list');
-            todoList.innerHTML = '';
-            
-            todos.forEach(todo => {
-                const li = document.createElement('li');
-                li.className = 'todo-item';
-                li.innerHTML = `
-                    <span>${todo.title}</span>
-                    <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
-                `;
-                todoList.appendChild(li);
-            });
-        }
-        
-        async function addTodo() {
-            const input = document.getElementById('todo-input');
-            const title = input.value.trim();
-            
-            if (title) {
-                await fetch('/todos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title })
-                });
-                input.value = '';
-                loadTodos();
-            }
-        }
-        
-        async function deleteTodo(id) {
-            await fetch(`/todos/${id}`, { method: 'DELETE' });
-            loadTodos();
-        }
-        
-        // Load todos on page load
-        loadTodos();
-    </script>
 </body>
 </html>
